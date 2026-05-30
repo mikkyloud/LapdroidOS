@@ -1,0 +1,25 @@
+function launchApp(appName) {
+  if (appName === "PowerMorpher") {
+    activatePowerMorpher();
+    return;
+  }
+
+  // This sends a request to the backend (Python Flask)
+  fetch(`http://127.0.0.1:5000/launch/${appName}`)
+    .then(res => res.text())
+    .then(msg => alert(msg))
+    .catch(err => alert("⚠️ Backend not running. Please start Python server."));
+}
+
+function activatePowerMorpher() {
+  alert("⚡ IT’S MORPHIN’ TIME! ⚡");
+
+  document.body.classList.add("morphing");
+
+  const audio = new Audio("morphin.mp3");
+  audio.play();
+
+  setTimeout(() => {
+    document.body.classList.remove("morphing");
+  }, 5000);
+}

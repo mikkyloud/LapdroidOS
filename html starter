@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>LapdroidOS</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div class="phone-screen">
+    <div class="app" onclick="launchApp('YouTube')">📺 YouTube</div>
+    <div class="app" onclick="launchApp('WhatsApp')">💬 WhatsApp</div>
+    <div class="app" onclick="launchApp('Camera')">📷 Camera</div>
+    <div class="app" onclick="launchApp('Facebook')">📘 Facebook</div>
+    <div class="app" onclick="launchApp('Settings')">⚙️ Settings</div>
+    <div class="app" onclick="launchApp('PowerMorpher')">⚡ Power Morpher</div>
+  </div>
+
+  <script src="main.js"></script>
+</body>
+</html>

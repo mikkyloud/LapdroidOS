@@ -1,0 +1,10 @@
+LapdroidOS/
+│
+├── frontend/
+│   ├── index.html
+│   ├── style.css
+│   ├── main.js
+│   └── morphin.mp3     ← (your Power Morpher sound)
+│
+├── backend/
+│   └── app.py

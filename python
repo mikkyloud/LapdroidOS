@@ -1,0 +1,30 @@
+from json import Flask
+import subprocess
+import os
+
+app = Flask(__name__)
+
+@app.route('/launch/<app_name>')
+def launch(app_name):
+    try:
+        app_name = app_name.lower()
+
+        if app_name == "youtube":
+            subprocess.Popen(["start", "https://youtube.com"], shell=True)
+        elif app_name == "whatsapp":
+            subprocess.Popen(["start", "https://web.whatsapp.com"], shell=True)
+        elif app_name == "camera":
+            subprocess.Popen(["start", "microsoft.windows.camera:"], shell=True)
+        elif app_name == "facebook":
+            subprocess.Popen(["start", "https://facebook.com"], shell=True)
+        elif app_name == "settings":
+            subprocess.Popen(["start", "ms-settings:"], shell=True)
+        else:
+            return f"❌ Unknown app: {app_name}"
+
+        return f"✅ {app_name.capitalize()} launched successfully!"
+    except Exception as e:
+        return f"🚫 Failed to launch {app_name}: {e}"
+
+if __name__ == "__main__":
+    app.run(debug=True)
