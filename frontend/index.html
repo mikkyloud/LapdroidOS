@@ -1,0 +1,457 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>LapdroidOS - Landscape Tablet & Desktop Emulator</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <!-- Host PC Backdrop (Glassmorphic Environment) -->
+  <div class="host-environment">
+    
+    <div class="host-header">
+      <div class="host-logo"><img src="logo.png" alt="LM Logo" class="host-logo-img">Lapdroid Player</div>
+      <div class="host-controls">
+        <button onclick="toggleOrientation()">Rotate (Tablet/Phone)</button>
+        <button onclick="takeScreenshot()">Screenshot</button>
+        <button onclick="togglePower()">Power</button>
+      </div>
+    </div>
+
+    <!-- Main Widescreen Emulator Device Frame (LDPlayer Style) -->
+    <div class="emulator-device landscape" id="device-frame">
+      
+      <!-- Device Outer Frame Elements -->
+      <div class="hardware-notch-container">
+        <div class="hardware-notch-tablet"></div>
+      </div>
+      <div class="hardware-btn volume-up" onclick="adjustVolume(5)"></div>
+      <div class="hardware-btn volume-down" onclick="adjustVolume(-5)"></div>
+      <div class="hardware-btn power-button" onclick="togglePower()"></div>
+
+      <div class="emulator-inner-wrapper">
+        
+        <!-- Device Screen Container -->
+        <div class="screen-container" id="screen-container">
+          
+          <!-- Brightness Overlay -->
+          <div id="brightness-overlay" class="brightness-overlay-el"></div>
+
+          <!-- Top Status Bar (Interactive Pulldown Trigger) -->
+          <div class="status-bar" onclick="toggleQuickSettings()">
+            <span class="time" id="status-time">10:00 AM</span>
+            <span class="status-center-info">⚡ Tablet Mode</span>
+            <div class="icons">
+              <!-- Bluetooth Icon -->
+              <svg class="status-icon" id="status-bt-icon" viewBox="0 0 24 24"><path d="M17.71 7.71L12 2h-1v7.59L6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 11 14.41V22h1l5.71-5.71-4.3-4.29 4.3-4.29zM13 5.83l1.88 1.88L13 9.59V5.83zm1.88 10.46L13 18.17v-3.76l1.88 1.88z" fill="currentColor"/></svg>
+              <!-- WiFi Icon -->
+              <svg class="status-icon" id="status-wifi-icon" viewBox="0 0 24 24"><path d="M12.01 21.49L23.64 7c-.45-.34-4.93-4-11.64-4C5.28 3 .81 6.66.36 7l11.63 14.49.01.01.01-.01z" fill="currentColor"/></svg>
+              <!-- Battery Icon -->
+              <svg class="status-icon" viewBox="0 0 24 24"><path d="M15.67 4H14V2h-4v2H8.33C7.6 4 7 4.6 7 5.33v15.33C7 21.4 7.6 22 8.33 22h7.33c.74 0 1.34-.6 1.34-1.33V5.33C17 4.6 16.4 4 15.67 4z" fill="currentColor"/></svg>
+            </div>
+          </div>
+
+          <!-- Quick Settings Pulldown Bar -->
+          <div id="quick-settings-panel" class="quick-settings-panel">
+            <div class="qs-header">
+              <div class="qs-header-time" id="qs-time">10:00 AM</div>
+              <div class="qs-header-date" id="qs-date">Monday, June 1</div>
+            </div>
+            
+            <div class="qs-toggles-grid">
+              <div class="qs-toggle active" id="toggle-wifi" onclick="toggleQSFeature('wifi')">
+                <div class="qs-toggle-icon">📶</div>
+                <span>Wi-Fi</span>
+              </div>
+              <div class="qs-toggle active" id="toggle-bluetooth" onclick="toggleQSFeature('bluetooth')">
+                <div class="qs-toggle-icon">🔹</div>
+                <span>Bluetooth</span>
+              </div>
+              <div class="qs-toggle" id="toggle-airplane" onclick="toggleQSFeature('airplane')">
+                <div class="qs-toggle-icon">✈️</div>
+                <span>Airplane</span>
+              </div>
+              <div class="qs-toggle active" id="toggle-rotate" onclick="toggleQSFeature('rotate')">
+                <div class="qs-toggle-icon">🔄</div>
+                <span>Auto-Rotate</span>
+              </div>
+            </div>
+
+            <div class="qs-sliders">
+              <div class="qs-slider-group">
+                <span>🔆</span>
+                <input type="range" id="brightness-slider" min="10" max="100" value="100" oninput="adjustBrightness(this.value)">
+              </div>
+              <div class="qs-slider-group">
+                <span>🔊</span>
+                <input type="range" id="volume-slider" min="0" max="100" value="80" oninput="adjustVolumeSlider(this.value)">
+              </div>
+            </div>
+
+            <div class="qs-notifications">
+              <div class="qs-notification-title">Notifications</div>
+              <div class="qs-notification-item">
+                <div class="qs-notif-icon">🛡️</div>
+                <div class="qs-notif-content">
+                  <h5>System Shield</h5>
+                  <p>Emulator operating in highly secure sandbox mode.</p>
+                </div>
+              </div>
+              <div class="qs-notification-item">
+                <div class="qs-notif-icon">💬</div>
+                <div class="qs-notif-content">
+                  <h5>WhatsApp</h5>
+                  <p>Lapdroid Bot sent you a message.</p>
+                </div>
+              </div>
+            </div>
+
+            <div class="qs-footer" onclick="toggleQuickSettings()">
+              <span>Collapse Panel ▲</span>
+            </div>
+          </div>
+
+          <!-- Lock Screen View -->
+          <div id="view-lock" class="os-view active">
+            <div class="lock-clock" id="lock-clock">10:00 AM</div>
+            <div class="lock-date" id="lock-date">Mon, Jun 1</div>
+            <div class="swipe-hint">Click Screen to Unlock</div>
+          </div>
+
+          <!-- Main Home Screen View (Widescreen Grid) -->
+          <div id="view-home" class="os-view">
+            
+            <!-- Desktop Grid Apps -->
+            <div class="home-grid" id="home-apps-grid">
+              
+              <div class="app-shortcut" onclick="openApp('PlayStore')">
+                <div class="app-icon">
+                  <svg class="svg-icon" viewBox="0 0 24 24">
+                    <path d="M3 2.5a2 2 0 0 0-2 2v15a2 2 0 0 0 2 2 2 2 0 0 0 1.1-.3l15.9-9.2a2 2 0 0 0 0-3.5L4.1 2.8A2 2 0 0 0 3 2.5z" fill="#00C853"/>
+                    <path d="M3 2.5a2 2 0 0 0-1.1.3L12 12 3.9 21.2A2 2 0 0 0 3 2.5z" fill="#00B0FF"/>
+                    <path d="M12 12l8.1-4.7c.6-.4.9-1 .9-1.8s-.3-1.4-.9-1.8L12 12z" fill="#FFD600"/>
+                    <path d="M12 12L20.1 16.7c.6.4.9 1 .9 1.8s-.3 1.4-.9-1.8L12 12z" fill="#FF1744"/>
+                  </svg>
+                </div>
+                <span class="app-label">Play Store</span>
+              </div>
+
+              <div class="app-shortcut" onclick="openApp('YouTube')">
+                <div class="app-icon">
+                  <svg class="svg-icon" viewBox="0 0 24 24" fill="none">
+                    <path d="M22.54 6.42a2.78 2.78 0 0 0-1.95-1.96C18.88 4 12 4 12 4s-6.88 0-8.59.46a2.78 2.78 0 0 0-1.95 1.96A29 29 0 0 0 1 12a29 29 0 0 0 .46 5.58 2.78 2.78 0 0 0 1.95 1.96C5.12 20 12 20 12 20s6.88 0 8.59-.46a2.78 2.78 0 0 0 1.95-1.96A29 29 0 0 0 23 12a29 29 0 0 0-.46-5.58z" fill="#FF0000"/>
+                    <polygon points="9.75 15.02 15.5 12 9.75 8.98 9.75 15.02" fill="#FFFFFF"/>
+                  </svg>
+                </div>
+                <span class="app-label">YouTube</span>
+              </div>
+
+              <div class="app-shortcut" onclick="openApp('WhatsApp')">
+                <div class="app-icon">
+                  <svg class="svg-icon" viewBox="0 0 24 24" fill="none">
+                    <path d="M19.05 4.91A9.82 9.82 0 0 0 12.03 2c-5.46 0-9.91 4.45-9.91 9.91 0 1.75.46 3.45 1.32 4.95L2.05 22l5.25-1.38a9.88 9.88 0 0 0 4.73 1.21c5.46 0 9.91-4.45 9.91-9.91 0-2.65-1.03-5.14-2.9-7.01zm-7.02 15.22c-1.48 0-2.93-.4-4.18-1.15l-.3-.18-3.1.81.83-3.03-.2-.31a8.17 8.17 0 0 1-1.25-4.37c0-4.51 3.67-8.18 8.18-8.18 2.19 0 4.24.85 5.79 2.4a8.13 8.13 0 0 1 2.4 5.79c0 4.51-3.67 8.18-8.18 8.18z" fill="#25D366"/>
+                    <path d="M16.76 13.96c-.26-.13-1.54-.76-1.78-.85-.24-.09-.41-.13-.58.13-.17.26-.67.85-.82 1.02-.15.17-.3.19-.56.06A7.06 7.06 0 0 1 10 12.06c-1.17-1.01-1.96-2.27-2.19-2.66-.23-.39-.02-.6.24-.85.1-.1.2-.24.3-.36.1-.12.14-.21.21-.36.07-.15.03-.28-.01-.36-.05-.09-.41-1-.56-1.37-.15-.36-.31-.31-.43-.31h-.36c-.13 0-.34.05-.52.24-.18.19-.7.68-.7 1.66s.72 1.93.82 2.06c.1.13 1.42 2.16 3.43 3.03.48.2 1 .32 1.35.43.51.16.97.14 1.34.08.41-.06 1.54-.63 1.76-1.24.22-.61.22-1.13.15-1.24-.07-.11-.24-.17-.5-.3z" fill="#FFFFFF"/>
+                  </svg>
+                </div>
+                <span class="app-label">WhatsApp</span>
+              </div>
+
+              <div class="app-shortcut" onclick="openApp('Google')">
+                <div class="app-icon">
+                  <svg class="svg-icon" viewBox="0 0 24 24" fill="#FFFFFF">
+                    <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/>
+                    <path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/>
+                    <path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.06H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.94l2.85-2.22.81-.63z" fill="#FBBC05"/>
+                    <path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.06l3.66 2.84c.87-2.6 3.3-4.52 6.16-4.52z" fill="#EA4335"/>
+                  </svg>
+                </div>
+                <span class="app-label">Google</span>
+              </div>
+
+              <div class="app-shortcut" onclick="openApp('Maps')">
+                <div class="app-icon" style="background:#FFF;">
+                  <svg class="svg-icon" viewBox="0 0 24 24" fill="none">
+                    <path d="M12 2a8 8 0 0 0-8 8c0 5.25 8 12 8 12s8-6.75 8-12a8 8 0 0 0-8-8z" fill="#34A853"/>
+                    <circle cx="12" cy="10" r="3" fill="#FFFFFF"/>
+                  </svg>
+                </div>
+                <span class="app-label">Maps</span>
+              </div>
+
+              <div class="app-shortcut" onclick="openApp('RetroGame')">
+                <div class="app-icon" style="background: linear-gradient(135deg, #7c3aed, #4f46e5);">
+                  <svg class="svg-icon" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2">
+                    <polygon points="12 2 2 22 12 17 22 22 12 2"/>
+                  </svg>
+                </div>
+                <span class="app-label">Cyber Space</span>
+              </div>
+
+            </div>
+
+            <!-- Bottom Task Dock (Tablet Style) -->
+            <div class="home-dock">
+              <div class="dock-item" onclick="openApp('Camera')">
+                <svg class="svg-icon" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z" fill="rgba(255, 255, 255, 0.2)"/>
+                  <circle cx="12" cy="13" r="4"/>
+                </svg>
+              </div>
+              <div class="dock-item" onclick="openApp('Settings')">
+                <svg class="svg-icon" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <circle cx="12" cy="12" r="3"/>
+                  <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/>
+                </svg>
+              </div>
+              <div class="dock-item" onclick="openApp('Browser')">
+                <svg class="svg-icon" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <circle cx="12" cy="12" r="10" fill="rgba(255,255,255,0.2)"/>
+                  <line x1="2" y1="12" x2="22" y2="12"/>
+                  <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/>
+                </svg>
+              </div>
+            </div>
+
+          </div>
+
+          <!-- APP VIEWPORTS -->
+          
+          <!-- APP: PlayStore -->
+          <div id="app-PlayStore" class="os-view app-window bg-white">
+            <div class="app-header playstore-header">
+              <span>Play Store</span>
+              <span class="close-btn" onclick="goHome()">Done</span>
+            </div>
+            <div class="app-content playstore-content">
+              <div class="store-banner">Recommended for Widescreen</div>
+              <div class="store-item">
+                <div class="store-icon fb">f</div>
+                <div class="store-info">
+                  <h4>Facebook</h4>
+                  <p>Social Media</p>
+                </div>
+                <button class="btn-install" onclick="installApp('Facebook', this)">Install</button>
+              </div>
+              <div class="store-item">
+                <div class="store-icon ig">ig</div>
+                <div class="store-info">
+                  <h4>Instagram</h4>
+                  <p>Photo Sharing</p>
+                </div>
+                <button class="btn-install" onclick="installApp('Instagram', this)">Install</button>
+              </div>
+              <div class="store-item">
+                <div class="store-icon tt">tt</div>
+                <div class="store-info">
+                  <h4>TikTok</h4>
+                  <p>Short Videos</p>
+                </div>
+                <button class="btn-install" onclick="installApp('TikTok', this)">Install</button>
+              </div>
+            </div>
+          </div>
+
+          <!-- APP: WhatsApp -->
+          <div id="app-WhatsApp" class="os-view app-window bg-wa">
+            <div class="app-header wa-header">
+              <span class="back-btn" onclick="goHome()">◄ Home</span>
+              <div class="wa-user-info">
+                <div class="wa-avatar"></div>
+                <div class="wa-name">Lapdroid Widescreen Bot</div>
+              </div>
+            </div>
+            <div class="app-content wa-content" id="wa-chat-box">
+              <div class="wa-bubble received">Hello! This is WhatsApp in tablet / widescreen mode.</div>
+              <div class="wa-bubble received">It feels like a premium desktop messenger!</div>
+            </div>
+            <div class="wa-input-area">
+              <input type="text" id="wa-input" placeholder="Type a message..." onkeypress="handleWaEnter(event)">
+              <button class="wa-send" onclick="sendWaMessage()">➤</button>
+            </div>
+          </div>
+
+          <!-- APP: Camera -->
+          <div id="app-Camera" class="os-view app-window bg-black">
+            <video id="camera-stream" autoplay playsinline></video>
+            <div class="camera-ui">
+              <button class="btn-shutter" onclick="snapPhoto()"></button>
+              <span class="close-btn-cam" onclick="goHome()">Exit Camera</span>
+            </div>
+          </div>
+
+          <!-- APP: YouTube -->
+          <div id="app-YouTube" class="os-view app-window bg-black">
+            <div class="app-header yt-header">
+              <span class="close-btn text-white" onclick="goHome()">◄ Back</span>
+              <span>YouTube Tablet</span>
+            </div>
+            <div class="app-content yt-content">
+              <iframe width="100%" height="320" src="https://www.youtube.com/embed/dQw4w9WgXcQ" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+              <div class="yt-video-info">
+                <h3>Never Gonna Give You Up (Widescreen Tablet HD)</h3>
+                <p>Rick Astley • 1B Views</p>
+              </div>
+            </div>
+          </div>
+
+          <!-- APP: Settings -->
+          <div id="app-Settings" class="os-view app-window bg-white">
+            <div class="app-header settings-header">
+              <span>Settings</span>
+              <span class="close-btn" onclick="goHome()">Done</span>
+            </div>
+            <div class="app-content settings-content">
+              <div class="settings-group">
+                <h4>Display</h4>
+                <div class="settings-item">
+                  <span>Dark Mode</span>
+                  <input type="checkbox" id="dark-mode-toggle" onchange="toggleTheme(this)">
+                </div>
+                <div class="settings-item">
+                  <span>Wallpaper</span>
+                  <button onclick="changeWallpaper()">Change Wallpaper</button>
+                </div>
+              </div>
+              <div class="settings-group">
+                <h4>Widescreen & Controls</h4>
+                <div class="settings-item">Aspect Ratio: 16:10 Desktop Widescreen</div>
+                <div class="settings-item">Quick Settings pulldown: Enabled</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- APP: Generic Browser -->
+          <div id="app-Browser" class="os-view app-window bg-white">
+            <div class="app-header browser-header">
+              <input type="text" class="browser-url" value="https://google.com" readonly>
+              <span class="close-btn" onclick="goHome()">Done</span>
+            </div>
+            <div class="app-content browser-content">
+              <iframe src="https://example.com" class="browser-frame"></iframe>
+            </div>
+          </div>
+
+          <!-- APP: Space Shooter Game -->
+          <div id="app-RetroGame" class="os-view app-window bg-black">
+            <div class="app-header" style="background:#1e1b4b; color:white; border-bottom:1px solid #312e81;">
+              <span>Space Cyber Shooter</span>
+              <div style="display:flex; gap:12px;">
+                <span class="close-btn" style="color:#a78bfa;" onclick="toggleKeyboardMapping()">⌨️ Mapping</span>
+                <span class="close-btn" style="color:#ef4444;" onclick="goHome()">Done</span>
+              </div>
+            </div>
+            <div class="app-content" style="padding:0; overflow:hidden; position:relative; background:#020617; display:flex; flex-direction:column; align-items:center; justify-content:center;">
+              <canvas id="game-canvas" width="640" height="380" style="background:#02020a; border: 1px solid #1e1e38; box-shadow:0 0 30px rgba(99, 102, 241, 0.2); border-radius:12px;"></canvas>
+              
+              <!-- Keyboard Controls Overlay hint -->
+              <div class="game-hud" style="position:absolute; top:20px; left:20px; font-family:var(--font-mono); color:#38bdf8; font-size:12px;">
+                Mapped Controls: <span id="hint-left">A</span>/L, <span id="hint-right">D</span>/R, Fire: <span id="hint-shoot">Space</span>
+              </div>
+              <div class="game-hud" style="position:absolute; top:20px; right:20px; font-family:var(--font-mono); color:#a78bfa; font-size:12px;">
+                Score: <span id="game-score">0</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Keyboard Mapping Configuration Panel Overlay -->
+          <div id="keyboard-mapping-panel" class="keyboard-mapping-panel">
+            <div class="km-header">
+              <h4>⌨️ Key Controls Mapping</h4>
+              <span class="km-close" onclick="toggleKeyboardMapping()">✕</span>
+            </div>
+            <p class="km-description">Input your preferred keyboard bindings for game controls:</p>
+            <div class="km-rows">
+              <div class="km-row">
+                <span>Move Left</span>
+                <input type="text" id="km-left-input" maxlength="25" value="KeyA" onfocus="captureNextKey(this, 'left')">
+              </div>
+              <div class="km-row">
+                <span>Move Right</span>
+                <input type="text" id="km-right-input" maxlength="25" value="KeyD" onfocus="captureNextKey(this, 'right')">
+              </div>
+              <div class="km-row">
+                <span>Fire Laser</span>
+                <input type="text" id="km-shoot-input" maxlength="25" value="Space" onfocus="captureNextKey(this, 'shoot')">
+              </div>
+            </div>
+            <div style="font-size:10px; color:#94a3b8; margin-top:8px; line-height:1.3;">
+              💡 Click an input and press any key to record it automatically!
+            </div>
+            <button class="km-save-btn" onclick="saveKeyboardMappings()">Apply Controls</button>
+          </div>
+
+          <!-- Recent Apps Multitasking Overview (LDPlayer App Switcher) -->
+          <div id="app-switcher-view" class="os-view app-window bg-black">
+            <div class="app-header switcher-header">
+              <span>Recent Running Apps</span>
+              <span class="close-btn text-white" onclick="closeAppSwitcher()">Close</span>
+            </div>
+            <div class="app-content switcher-content" id="switcher-grid">
+              <!-- Dynamically populated running apps card previews -->
+            </div>
+          </div>
+
+        </div> <!-- End Screen Container -->
+
+        <!-- LDPlayer Style Utility Right Sidebar -->
+        <div class="emulator-sidebar">
+          
+          <button class="sidebar-btn" onclick="togglePower()" title="Power Button">
+            <span class="btn-icon">🔌</span>
+          </button>
+          
+          <button class="sidebar-btn" onclick="adjustVolume(10)" title="Volume Up">
+            <span class="btn-icon">🔊</span>
+          </button>
+
+          <button class="sidebar-btn" onclick="adjustVolume(-10)" title="Volume Down">
+            <span class="btn-icon">🔉</span>
+          </button>
+
+          <button class="sidebar-btn" onclick="takeScreenshot()" title="Screenshot">
+            <span class="btn-icon">📸</span>
+          </button>
+
+          <button class="sidebar-btn" onclick="toggleOrientation()" title="Rotate Device">
+            <span class="btn-icon">🔄</span>
+          </button>
+
+          <button class="sidebar-btn" onclick="triggerShake()" title="Shake Device">
+            <span class="btn-icon">📳</span>
+          </button>
+
+          <button class="sidebar-btn" onclick="toggleKeyboardMapping()" title="Keyboard Mapping">
+            <span class="btn-icon">⌨️</span>
+          </button>
+
+          <button class="sidebar-btn" onclick="openAppSwitcher()" title="App Switcher">
+            <span class="btn-icon">📋</span>
+          </button>
+
+          <div class="sidebar-divider"></div>
+
+          <!-- Physical Emulator Android buttons -->
+          <button class="sidebar-btn android-key" onclick="goHome()" title="Home Key">
+            <span class="btn-icon">🏠</span>
+          </button>
+
+          <button class="sidebar-btn android-key" onclick="goBack()" title="Back Key">
+            <span class="btn-icon">◀</span>
+          </button>
+
+        </div>
+
+      </div> <!-- End Emulator Inner Wrapper -->
+
+      <!-- Home Gesture Bar (For Modern Tablet styling) -->
+      <div class="home-indicator" onclick="goHome()"></div>
+      
+    </div> <!-- End Emulator Device -->
+
+  </div> <!-- End Host Environment -->
+
+  <script src="main.js"></script>
+</body>
+</html>
